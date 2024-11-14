@@ -3,5 +3,5 @@ while true; do
     git add .
     git commit -m "Автоматический коммит"
     git push origin main
-    sleep 60
+    sleep 600
 done
