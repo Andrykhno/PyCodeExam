@@ -17,6 +17,34 @@ def unblur_background(event=None): #что бы убирать блюр
         restore_button()  # Восстанавливаем кнопку
         is_blurred = False
 
+def create_start_screen():
+    # Создаем Frame для начального экрана
+    start_screen = tk.Frame(root, bg="#d3d3d3")
+    start_screen.pack(fill="both", expand=True)
+
+    # Кнопка "Start Game"
+    start_button = tk.Button(
+        start_screen, 
+        text="Start Game", 
+        font=("Arial", 16), 
+        bg="#404040", 
+        fg="white", 
+        width=20, 
+        command=lambda: start_game(start_screen)
+    )
+    start_button.pack(pady=20)
+    quit_button = tk.Button(
+        start_screen, 
+        text="Quit", 
+        font=("Arial", 16), 
+        bg="#404040", 
+        fg="white", 
+        width=20, 
+        
+    )
+
+
+
 root = tk.Tk()
 root.geometry("1500x1000")
 
