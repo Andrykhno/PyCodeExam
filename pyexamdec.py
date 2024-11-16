@@ -37,3 +37,4 @@ photo_paths_boscall = [ #путь к фото после гифки
 photo_images = [ImageTk.PhotoImage(Image.open(path)) for path in photo_paths]
 current_photo_index = 0
 
+root.mainloop()
