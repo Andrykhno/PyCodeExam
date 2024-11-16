@@ -3,6 +3,7 @@ from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageSequence
 
 is_blurred = False
 button_id = None
+button_photo = None
 
 def on_button_click():
     print("Круглая кнопка нажата!")
@@ -22,7 +23,19 @@ def unblur_background(event=None):
         is_blurred = False
 
 def restore_button():
-    global button_id
+    global button_id, button_photo
+    if button_photo is None:
+        button_radius = 50
+        button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(button_image)
+        draw.ellipse(
+            (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
+            fill=(211, 211, 211, 77),
+            outline=(80, 80, 80, 100),
+            width=4
+        )
+        button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
+        button_photo = ImageTk.PhotoImage(button_image)
     if button_id is None:
         button_id = canvas.create_image(800, 750, image=button_photo, anchor=tk.CENTER)
 
@@ -59,9 +72,7 @@ def start_game(start_screen):
     restore_button()
 
 def button_create(new_x, new_y, action):
-    """Создает полупрозрачную круглую кнопку с полупрозрачной обводкой."""
     button_radius = 50
-    # Рисуем круг с полупрозрачной заливкой и обводкой
     button_id = canvas.create_oval(
         new_x - button_radius,
         new_y - button_radius,
@@ -72,13 +83,14 @@ def button_create(new_x, new_y, action):
         width=3  
     )
 
-def show_photo():
-    print("Фото будет показано")
+    def on_circle_click(event):
+        if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
+            action()
 
-def on_circle_click(event):
-    if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
-        action()
     canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
+
+def show_photo():
+    print("Фото будет показано!")
 
 root = tk.Tk()
 root.geometry("1500x1000")
@@ -107,8 +119,6 @@ blurred_photo = ImageTk.PhotoImage(blurred_image)
 canvas = tk.Canvas(root, width=1500, height=1000)
 background_id = canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
 
-
-button_create(750, 500, show_photo)
-
+# button_create(750, 500, show_photo)
 create_start_screen()
 root.mainloop()
