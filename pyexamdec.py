@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageSequence
 
-def blur_background():
+def blur_background(): #что бы блюрить что либо когда ты открываешь что-то на первом слое
     global is_blured
     if not is_blurred:
         canvas.itemconfig(background_id, image=blurred_photo)
@@ -9,7 +9,7 @@ def blur_background():
         add_computer_image()  # Добавляем новое изображение
         is_blurred = True
 
-def unblur_background(event=None):
+def unblur_background(event=None): #что бы убирать блюр
     """Функция для снятия размытия с фона и возврата кнопки."""
     global is_blurred, button_id
     if is_blurred:  # Проверяем, если фон размыт
@@ -21,13 +21,13 @@ root = tk.Tk()
 root.geometry("1500x1000")
 
 image1 = Image.open("/Users/andriiprykhno/Desktop/photo/ill1.png")  # Основной фон
-computer_image = Image.open("/Users/andriiprykhno/Desktop/photo/ill3.png")
+computer_image = Image.open("/Users/andriiprykhno/Desktop/photo/ill3.png") # картинка экрана компьютера 
 gif_path = "/Users/andriiprykhno/Desktop/photo/firstanimaation.gif"  # Анимация GIF
 
 gif = Image.open(gif_path)
 gif_frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
 
-photo_paths = [
+photo_paths_boscall = [ #путь к фото после гифки
     "/Users/andriiprykhno/Desktop/photo/animpho1.png",
     "/Users/andriiprykhno/Desktop/photo/animpho2.png",
     "/Users/andriiprykhno/Desktop/photo/animpho3.png",
@@ -36,3 +36,4 @@ photo_paths = [
 
 photo_images = [ImageTk.PhotoImage(Image.open(path)) for path in photo_paths]
 current_photo_index = 0
+
