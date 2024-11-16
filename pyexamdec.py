@@ -58,21 +58,52 @@ def start_game(start_screen):
     canvas.pack(fill="both", expand=True)
     restore_button()
 
+def button_create(new_x, new_y, action):
+    global button_photo
+    button_radius = 50
+    button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(button_image)
+    draw.ellipse(
+        (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
+        fill=(211, 211, 211, 77),
+        outline=(0, 0, 0, 70),
+        width=4
+    )
+    button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
+    button_photo = ImageTk.PhotoImage(button_image)
+
+    # Добавляем невидимую кнопку для обработки кликов
+    invisible_button = tk.Button(
+        root,
+        text="",
+        command=action,
+        bg="#ffffff",
+        highlightthickness=0,
+        bd=0,
+        relief="flat"
+    )
+    invisible_button.place(
+        x=new_x - button_radius, 
+        y=new_y - button_radius, 
+        width=button_radius * 2, 
+        height=button_radius * 2
+    )
+
 root = tk.Tk()
 root.geometry("1500x1000")
 
-image1 = Image.open("/Users/andriiprykhno/Desktop/photo/ill1.png")
-computer_image = Image.open("/Users/andriiprykhno/Desktop/photo/ill3.png")
-gif_path = "/Users/andriiprykhno/Desktop/photo/firstanimaation.gif"
+image1 = Image.open("/Users/andriiprykhno/Desktop/PyCodeExam/photo/ill1.png")
+computer_image = Image.open("/Users/andriiprykhno/Desktop/PyCodeExam/photo/ill3.png")
+gif_path = "/Users/andriiprykhno/Desktop/PyCodeExam/photo/firstanimaation.gif"
 
 gif = Image.open(gif_path)
 gif_frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
 
 photo_paths = [
-    "/Users/andriiprykhno/Desktop/photo/animpho1.png",
-    "/Users/andriiprykhno/Desktop/photo/animpho2.png",
-    "/Users/andriiprykhno/Desktop/photo/animpho3.png",
-    "/Users/andriiprykhno/Desktop/photo/animpho4.png",
+    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho1.png",
+    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho2.png",
+    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho3.png",
+    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho4.png",
 ]
 
 photo_images = [ImageTk.PhotoImage(Image.open(path)) for path in photo_paths]
@@ -85,17 +116,7 @@ blurred_photo = ImageTk.PhotoImage(blurred_image)
 canvas = tk.Canvas(root, width=1500, height=1000)
 background_id = canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
 
-button_radius = 50
-button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
-draw = ImageDraw.Draw(button_image)
-draw.ellipse(
-    (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
-    fill=(211, 211, 211, 77),
-    outline=(0, 0, 0, 70),
-    width=4
-)
-button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
-button_photo = ImageTk.PhotoImage(button_image)
+button_create(750, 500, print(7))
 
 create_start_screen()
 root.mainloop()
