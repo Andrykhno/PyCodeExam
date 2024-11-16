@@ -59,35 +59,26 @@ def start_game(start_screen):
     restore_button()
 
 def button_create(new_x, new_y, action):
-    global button_photo
+    """Создает полупрозрачную круглую кнопку с полупрозрачной обводкой."""
     button_radius = 50
-    button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(button_image)
-    draw.ellipse(
-        (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
-        fill=(211, 211, 211, 77),
-        outline=(0, 0, 0, 70),
-        width=4
+    # Рисуем круг с полупрозрачной заливкой и обводкой
+    button_id = canvas.create_oval(
+        new_x - button_radius,
+        new_y - button_radius,
+        new_x + button_radius,
+        new_y + button_radius,
+        fill="#a0a0a0", 
+        outline="#505050",  
+        width=3  
     )
-    button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
-    button_photo = ImageTk.PhotoImage(button_image)
 
-    # Добавляем невидимую кнопку для обработки кликов
-    invisible_button = tk.Button(
-        root,
-        text="",
-        command=action,
-        bg="#ffffff",
-        highlightthickness=0,
-        bd=0,
-        relief="flat"
-    )
-    invisible_button.place(
-        x=new_x - button_radius, 
-        y=new_y - button_radius, 
-        width=button_radius * 2, 
-        height=button_radius * 2
-    )
+def show_photo():
+    print("Фото будет показано")
+
+def on_circle_click(event):
+    if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
+        action()
+    canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
 
 root = tk.Tk()
 root.geometry("1500x1000")
@@ -116,7 +107,8 @@ blurred_photo = ImageTk.PhotoImage(blurred_image)
 canvas = tk.Canvas(root, width=1500, height=1000)
 background_id = canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
 
-button_create(750, 500, print(7))
+
+button_create(750, 500, show_photo)
 
 create_start_screen()
 root.mainloop()
