@@ -77,7 +77,7 @@ def start_game(start_screen):
     print("Нажата кнопка: Start Game")
     start_screen.pack_forget()
     canvas.pack(fill="both", expand=True)
-    create_or_restore_button(800, 750, on_button_click)
+    button_photo()
 
 def show_photo():
     print("Фото будет показано!")
