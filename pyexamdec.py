@@ -6,34 +6,55 @@ button_id = None
 button_photo = None
 
 def on_button_click():
+    """Обработчик нажатия кнопки."""
     print("Круглая кнопка нажата!")
+    blur_background()
 
 def blur_background():
-    global is_blurred
+    """Размывает фон и удаляет кнопку."""
+    global is_blurred, button_id
     if not is_blurred:
         canvas.itemconfig(background_id, image=blurred_photo)
-        canvas.delete(button_id)
+        if button_id is not None:
+            canvas.delete(button_id)
         is_blurred = True
 
-def unblur_background(x, y, event):
-    global is_blurred
+def unblur_background(event=None):
+    """Снимает размытие с фона и восстанавливает кнопку."""
+    global is_blurred, button_id
     if is_blurred:
         canvas.itemconfig(background_id, image=original_photo)
-        button(x, y, event)
+        create_button(750, 500, on_button_click)  # Восстанавливаем кнопку
         is_blurred = False
 
-def button(new_x, new_y, action):
+def create_button(new_x, new_y, action):
+    """Создает круглую кнопку на холсте."""
     global button_id, button_photo
     button_radius = 50
-    draw = ImageDraw.Draw(button_image)
-    draw.ellipse(
-        (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
-        fill=(211, 211, 211, 77),
-        outline=(80, 80, 80, 100),
-        width=4
-    )
+
+    if button_photo is None:  # Создаем изображение кнопки только один раз
+        button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(button_image)
+        draw.ellipse(
+            (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
+            fill=(211, 211, 211, 178),  # Светло-серая заливка с 70% прозрачности
+            outline=(80, 80, 80, 178),  # Темно-серая обводка с 70% прозрачности
+            width=4
+        )
+        button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
+        button_photo = ImageTk.PhotoImage(button_image)
+
+    if button_id is None:
+        button_id = canvas.create_image(new_x, new_y, image=button_photo, anchor=tk.CENTER)
+
+        def on_circle_click(event):
+            if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
+                action()
+
+        canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
 
 def create_start_screen():
+    """Создает начальный экран с кнопками."""
     start_screen = tk.Frame(root, bg="#d3d3d3")
     start_screen.pack(fill="both", expand=True)
 
@@ -60,12 +81,11 @@ def create_start_screen():
     quit_button.pack(pady=20)
 
 def start_game(start_screen):
+    """Переход на основной экран."""
     print("Нажата кнопка: Start Game")
     start_screen.pack_forget()
-    canvas.pack(fill="both", expand=True) 
-
-def show_photo():
-    print("Фото будет показано!")
+    canvas.pack(fill="both", expand=True)
+    create_button(750, 500, on_button_click)  # Создаем кнопку после старта
 
 root = tk.Tk()
 root.geometry("1500x1000")
@@ -95,7 +115,5 @@ canvas = tk.Canvas(root, width=1500, height=1000)
 background_id = canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
 
 create_start_screen()
-button(700, 800, on_button_click())
-
 root.bind("<Escape>", unblur_background)
 root.mainloop()
