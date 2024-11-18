@@ -53,25 +53,6 @@ def create_button(new_x, new_y, action):
 
         canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
 
-def start_animation():
-    print("Запуск анимации...")
-    menu_frame.pack_forget()
-    animation_label.pack(fill="both", expand=True)
-    play_animation()
-
-def play_animation():
-    def update(index):
-        print(f"Кадр анимации: {index}")
-        frame = gif_frames[index]
-        animation_label.configure(image=frame)
-        index += 1
-        if index == len(gif_frames):
-            start_photo_sequence()
-        else:
-            root.after(600, update, index)
-
-    update(0)
-
 def start_photo_sequence():
     print("Показ фотографий...")
     animation_label.pack_forget()
@@ -98,6 +79,23 @@ def show_main_screen():
     canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
     button_id = None
     create_button(750, 500, on_button_click)
+
+def start_animation():
+    menu_frame.pack_forget()  # Скрываем начальный экран
+    animation_label.pack(fill="both", expand=True)  # Показываем анимацию
+    play_animation()
+
+def play_animation():
+    def update(index):
+        frame = gif_frames[index]
+        animation_label.configure(image=frame)
+        index += 1
+        if index == len(gif_frames):
+            start_photo_sequence()  # Переход к последовательности фотографий
+        else:
+            root.after(500, update, index)  # Задержка между кадрами (200 мс)
+
+    update(0)
 
 root = tk.Tk()
 root.geometry("1500x1000")
