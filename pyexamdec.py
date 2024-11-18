@@ -1,30 +1,51 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageSequence
 
-is_blurred = False
+is_blurred = True
 button_id = None
 button_photo = None
 
+
 def on_button_click():
     print("Круглая кнопка нажата!")
+    blur_background()
 
 def blur_background():
-    global is_blurred, button_id
-    print("Размытие фона...")
-    if not is_blurred:
-        canvas.itemconfig(background_id, image=blurred_photo)
-        if button_id is not None:
-            canvas.delete(button_id)
-            button_id = None
-        is_blurred = True
+    canvas.itemconfig(background_id, image=blurred_photo)
 
 def unblur_background(event=None):
     global is_blurred, button_id
     print("Снятие размытия...")
     if is_blurred:
-        canvas.itemconfig(background_id, image=original_photo)
+        canvas.itemconfig(background_id, image=original_photo) 
         create_button(750, 500, on_button_click)
         is_blurred = False
+
+def create_button(new_x, new_y, action):
+    global button_id, button_photo
+    button_radius = 50
+
+    if button_photo is None:
+        button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(button_image)
+        draw.ellipse(
+            (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
+            fill=(211, 211, 211, 178),
+            outline=(80, 80, 80, 178),
+            width=4
+        )
+        button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
+        button_photo = ImageTk.PhotoImage(button_image)
+
+    if button_id is None:
+        print("Создание кнопки...")
+        button_id = canvas.create_image(new_x, new_y, image=button_photo, anchor=tk.CENTER)
+
+        def on_circle_click(event):
+            if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
+                action()
+
+        canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
 
 def create_button(new_x, new_y, action):
     global button_id, button_photo
@@ -77,11 +98,10 @@ def show_main_screen():
     canvas.delete("all")
     canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
     button_id = None
-    create_button(750, 250, on_button_click)
 
 def start_animation():
-    menu_frame.pack_forget()  # Скрываем начальный экран
-    animation_label.pack(fill="both", expand=True)  # Показываем анимацию
+    menu_frame.pack_forget()
+    animation_label.pack(fill="both", expand=True)
     play_animation()
 
 def play_animation():
@@ -90,11 +110,18 @@ def play_animation():
         animation_label.configure(image=frame)
         index += 1
         if index == len(gif_frames):
-            start_photo_sequence()  # Переход к последовательности фотографий
+            start_photo_sequence()
         else:
-            root.after(500, update, index)  # Задержка между кадрами (200 мс)
+            root.after(500, update, index)
 
     update(0)
+
+def add_computer_image():
+    print("Добавление изображения...")
+    resized_computer_image = computer_image.resize((1200, 800), Image.LANCZOS)
+    computer_photo = ImageTk.PhotoImage(resized_computer_image)
+    canvas.create_image(150, 100, anchor=tk.NW, image=computer_photo)
+    canvas.image = computer_photo
 
 
 root = tk.Tk()
@@ -131,6 +158,7 @@ start_button.pack(pady=20)
 
 exit_button = tk.Button(menu_frame, text="Выход", command=root.quit)
 exit_button.pack(pady=20)
+create_button(750, 250, on_button_click)
 
 animation_label = tk.Label(root)
 root.bind("<Escape>", unblur_background)
