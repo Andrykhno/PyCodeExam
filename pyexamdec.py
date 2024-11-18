@@ -7,7 +7,6 @@ button_photo = None
 
 def on_button_click():
     print("Круглая кнопка нажата!")
-    blur_background()
 
 def blur_background():
     global is_blurred, button_id
@@ -78,7 +77,7 @@ def show_main_screen():
     canvas.delete("all")
     canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
     button_id = None
-    create_button(750, 500, on_button_click)
+    create_button(750, 250, on_button_click)
 
 def start_animation():
     menu_frame.pack_forget()  # Скрываем начальный экран
@@ -96,6 +95,7 @@ def play_animation():
             root.after(500, update, index)  # Задержка между кадрами (200 мс)
 
     update(0)
+
 
 root = tk.Tk()
 root.geometry("1500x1000")
