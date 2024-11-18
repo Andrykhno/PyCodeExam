@@ -93,7 +93,6 @@ def show_next_photo(event=None):
         show_main_screen()
 
 def show_main_screen():
-    print("Переход на основной экран...")
     global button_id
     canvas.delete("all")
     canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
@@ -123,7 +122,6 @@ def add_computer_image():
     canvas.create_image(150, 100, anchor=tk.NW, image=computer_photo)
     canvas.image = computer_photo
 
-
 root = tk.Tk()
 root.geometry("1500x1000")
 
@@ -147,6 +145,7 @@ photo_paths = [
     "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho3.png",
     "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho4.png",
 ]
+
 photo_images = [ImageTk.PhotoImage(Image.open(path)) for path in photo_paths]
 current_photo_index = 0
 
