@@ -1,164 +1,85 @@
-import tkinter as tk
-from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageSequence
+# Accommodation Booking App
 
-is_blurred = True
-button_id = None
-button_photo = None
+class Accommodation:
+    def __init__(self, id, name, location, price, availability=True):
+        self.id = id
+        self.name = name
+        self.location = location
+        self.price = price
+        self.availability = availability
+
+    def __str__(self):
+        status = "Available" if self.availability else "Booked"
+        return f"{self.id}. {self.name} in {self.location} - ${self.price}/night [{status}]"
 
 
-def on_button_click():
-    print("Круглая кнопка нажата!")
-    blur_background()
+class BookingSystem:
+    def __init__(self):
+        self.accommodations = []
+        self.bookings = {}
 
-def blur_background():
-    canvas.itemconfig(background_id, image=blurred_photo)
+    def add_accommodation(self, id, name, location, price):
+        accommodation = Accommodation(id, name, location, price)
+        self.accommodations.append(accommodation)
 
-def unblur_background(event=None):
-    global is_blurred, button_id
-    print("Снятие размытия...")
-    if is_blurred:
-        canvas.itemconfig(background_id, image=original_photo) 
-        create_button(750, 500, on_button_click)
-        is_blurred = False
+    def view_accommodations(self):
+        print("\nAvailable Accommodations:")
+        for acc in self.accommodations:
+            print(acc)
 
-def create_button(new_x, new_y, action):
-    global button_id, button_photo
-    button_radius = 50
+    def book_accommodation(self, id, customer_name):
+        for acc in self.accommodations:
+            if acc.id == id:
+                if acc.availability:
+                    acc.availability = False
+                    self.bookings[id] = customer_name
+                    print(f"\nBooking confirmed for {acc.name} by {customer_name}.")
+                else:
+                    print("\nThis accommodation is already booked.")
+                return
+        print("\nAccommodation ID not found!")
 
-    if button_photo is None:
-        button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(button_image)
-        draw.ellipse(
-            (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
-            fill=(211, 211, 211, 178),
-            outline=(80, 80, 80, 178),
-            width=4
-        )
-        button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
-        button_photo = ImageTk.PhotoImage(button_image)
-
-    if button_id is None:
-        print("Создание кнопки...")
-        button_id = canvas.create_image(new_x, new_y, image=button_photo, anchor=tk.CENTER)
-
-        def on_circle_click(event):
-            if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
-                action()
-
-        canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
-
-def create_button(new_x, new_y, action):
-    global button_id, button_photo
-    button_radius = 50
-
-    if button_photo is None:
-        button_image = Image.new("RGBA", (button_radius * 4, button_radius * 4), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(button_image)
-        draw.ellipse(
-            (0, 0, button_radius * 4 - 1, button_radius * 4 - 1),
-            fill=(211, 211, 211, 178),
-            outline=(80, 80, 80, 178),
-            width=4
-        )
-        button_image = button_image.resize((button_radius * 2, button_radius * 2), Image.LANCZOS)
-        button_photo = ImageTk.PhotoImage(button_image)
-
-    if button_id is None:
-        print("Создание кнопки...")
-        button_id = canvas.create_image(new_x, new_y, image=button_photo, anchor=tk.CENTER)
-
-        def on_circle_click(event):
-            if (event.x - new_x) ** 2 + (event.y - new_y) ** 2 <= button_radius ** 2:
-                action()
-
-        canvas.tag_bind(button_id, "<Button-1>", on_circle_click)
-
-def start_photo_sequence():
-    print("Показ фотографий...")
-    animation_label.pack_forget()
-    canvas.pack(fill="both", expand=True)
-    root.bind("<Key>", show_next_photo)
-    root.bind("<Button-1>", show_next_photo)
-    show_next_photo()
-
-def show_next_photo(event=None):
-    global current_photo_index
-    canvas.delete("all")
-    if current_photo_index < len(photo_images):
-        print(f"Показ фото: {current_photo_index}")
-        next_photo = photo_images[current_photo_index]
-        canvas.create_image(0, 0, anchor=tk.NW, image=next_photo)
-        current_photo_index += 1
-    else:
-        show_main_screen()
-
-def show_main_screen():
-    global button_id
-    canvas.delete("all")
-    canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
-    button_id = None
-
-def start_animation():
-    menu_frame.pack_forget()
-    animation_label.pack(fill="both", expand=True)
-    play_animation()
-
-def play_animation():
-    def update(index):
-        frame = gif_frames[index]
-        animation_label.configure(image=frame)
-        index += 1
-        if index == len(gif_frames):
-            start_photo_sequence()
+    def view_bookings(self):
+        print("\nCurrent Bookings:")
+        if not self.bookings:
+            print("No bookings made yet.")
         else:
-            root.after(500, update, index)
+            for id, customer in self.bookings.items():
+                print(f"{self.accommodations[id - 1].name}: Booked by {customer}")
 
-    update(0)
 
-def add_computer_image():
-    print("Добавление изображения...")
-    resized_computer_image = computer_image.resize((1200, 800), Image.LANCZOS)
-    computer_photo = ImageTk.PhotoImage(resized_computer_image)
-    canvas.create_image(150, 100, anchor=tk.NW, image=computer_photo)
-    canvas.image = computer_photo
+def main():
+    system = BookingSystem()
 
-root = tk.Tk()
-root.geometry("1500x1000")
+    # Adding sample accommodations
+    system.add_accommodation(1, "Sea View Apartment", "Miami", 120)
+    system.add_accommodation(2, "Mountain Cabin", "Aspen", 150)
+    system.add_accommodation(3, "City Center Hotel", "New York", 200)
 
-image1 = Image.open("/Users/andriiprykhno/Desktop/PyCodeExam/photo/ill1.png")
-computer_image = Image.open("/Users/andriiprykhno/Desktop/PyCodeExam/photo/ill3.png")
-gif_path = "/Users/andriiprykhno/Desktop/PyCodeExam/photo/firstanimaation.gif"
+    while True:
+        print("\n--- Accommodation Booking System ---")
+        print("1. View Accommodations")
+        print("2. Book Accommodation")
+        print("3. View Bookings")
+        print("4. Exit")
+        choice = input("Enter your choice: ")
 
-blurred_image = image1.filter(ImageFilter.GaussianBlur(10))
-original_photo = ImageTk.PhotoImage(image1)
-blurred_photo = ImageTk.PhotoImage(blurred_image)
+        if choice == "1":
+            system.view_accommodations()
+        elif choice == "2":
+            try:
+                acc_id = int(input("Enter Accommodation ID to book: "))
+                customer_name = input("Enter your name: ")
+                system.book_accommodation(acc_id, customer_name)
+            except ValueError:
+                print("Invalid input. Please enter numeric IDs.")
+        elif choice == "3":
+            system.view_bookings()
+        elif choice == "4":
+            print("Exiting the system. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please select a valid option.")
 
-canvas = tk.Canvas(root, width=1500, height=1000)
-background_id = canvas.create_image(0, 0, anchor=tk.NW, image=original_photo)
-
-gif = Image.open(gif_path)
-gif_frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
-
-photo_paths = [
-    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho1.png",
-    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho2.png",
-    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho3.png",
-    "/Users/andriiprykhno/Desktop/PyCodeExam/photo/animpho4.png",
-]
-
-photo_images = [ImageTk.PhotoImage(Image.open(path)) for path in photo_paths]
-current_photo_index = 0
-
-menu_frame = tk.Frame(root, bg="#d3d3d3")
-menu_frame.pack(fill="both", expand=True)
-
-start_button = tk.Button(menu_frame, text="Начать играть", command=start_animation)
-start_button.pack(pady=20)
-
-exit_button = tk.Button(menu_frame, text="Выход", command=root.quit)
-exit_button.pack(pady=20)
-create_button(750, 250, on_button_click)
-
-animation_label = tk.Label(root)
-root.bind("<Escape>", unblur_background)
-root.mainloop()
+if __name__ == "__main__":
+    main()
