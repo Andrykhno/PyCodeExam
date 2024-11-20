@@ -19,3 +19,27 @@ def index():
 def staff():
     # Placeholder for staff information
     return render_template('staff.html')
+
+@app.route('/in_process')
+def in_process():
+    # Placeholder for future content
+    return render_template('in_process.html')
+
+@app.route('/account')
+def account():
+    # Display rooms that the user has selected or paid for
+    selected_rooms = [room for room in rooms if room['id'] in booked_rooms]
+    return render_template('account.html', rooms=selected_rooms)
+
+@app.route('/book/<int:room_id>')
+def book_room(room_id):
+    if room_id not in booked_rooms:
+        booked_rooms.append(room_id)
+    return redirect(url_for('account'))
+
+@app.route('/logo')
+def logo_redirect():
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    app.run(debug=True)
