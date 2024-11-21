@@ -1,35 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Accommodation Booking System</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Logo -->
-        <a class="navbar-brand" href="{{ url_for('logo_redirect') }}">
-            <img src="https://via.placeholder.com/40" alt="Logo" width="40" height="40">
-        </a>
-        <!-- Menu Items -->
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('staff') }}">Staff</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('in_process') }}">In Process</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('account') }}">Account</a>
-                </li>
-            </ul>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Select a Room</h1>
+<div class="row">
+    {% for room in rooms %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ url_for('static', filename='images/room' ~ loop.index ~ '.jpg') }}" class="card-img-top" alt="{{ room.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ room.name }}</h5>
+                <p class="card-text">{{ room.location }}</p>
+                <p class="card-text">${{ room.price }}/night</p>
+                {% if room.availability %}
+                    <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-primary">Book Now</a>
+                {% else %}
+                    <button class="btn btn-secondary" disabled>Booked</button>
+                {% endif %}
+            </div>
         </div>
-    </nav>
-    <!-- Content -->
-    <div class="container mt-4">
-        {% block content %}{% endblock %}
     </div>
-</body>
-</html>
+    {% endfor %}
+</div>
+{% endblock %}
