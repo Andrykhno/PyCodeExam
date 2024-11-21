@@ -1,6 +1,4 @@
 from flask import Flask, render_template, redirect, url_for
-import os
-print("Current working directory:", os.getcwd())
 
 app = Flask(__name__)
 
