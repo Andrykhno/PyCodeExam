@@ -55,6 +55,15 @@ def book_room(room_id):
         booked_rooms.append(room_id)
     return redirect(url_for('account'))
 
+@app.route('/book/<int:room_id>')
+def book_room(room_id):
+    room = next((room for room in rooms if room['id'] == room_id), None)
+    if room:
+        # Логика бронирования (например, добавить в список booked_rooms)
+        return render_template('booking_confirmation.html', room=room)
+    else:
+        return "Room not found", 404
+
 @app.route('/logo')
 def logo_redirect():
     return redirect(url_for('index'))
