@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 # Sample data
 rooms = [
-    {'id': 1, 'name': 'Sea View Apartment', 'location': 'Miami', 'price': 120, 'availability': True},
+    {'id': 1, 'name': 'Sea View Apartment', 'location': 'Lodnon, NW5 3AN', 'price': 120, 'availability': True},
     {'id': 2, 'name': 'Mountain Cabin', 'location': 'Aspen', 'price': 150, 'availability': True},
     {'id': 3, 'name': 'City Center Hotel', 'location': 'New York', 'price': 200, 'availability': False},
 ]
