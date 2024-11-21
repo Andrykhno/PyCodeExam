@@ -1,6 +1,15 @@
 from flask import Flask, render_template, redirect, url_for
+import requests
 
 app = Flask(__name__)
+
+def get_coordinates(location):
+    api_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={location}&key=YOUR_API_KEY"
+    response = requests.get(api_url)
+    data = response.json()
+    if data['results']:
+        return data['results'][0]['geometry']['location']
+    return None
 
 # Sample data
 rooms = [
