@@ -16,6 +16,15 @@ rooms = [
     {'id': 1, 'name': 'Sea View Apartment', 'location': 'Lodnon, NW5 3AN', 'price': 120, 'availability': True},
     {'id': 2, 'name': 'Mountain Cabin', 'location': 'Aspen', 'price': 150, 'availability': True},
     {'id': 3, 'name': 'City Center Hotel', 'location': 'New York', 'price': 200, 'availability': False},
+    {'id': 4, 'name': 'Sea View Apartment', 'location': 'Lodnon, NW5 3AN', 'price': 120, 'availability': True},
+    {'id': 5, 'name': 'Mountain Cabin', 'location': 'Aspen', 'price': 150, 'availability': True},
+    {'id': 6, 'name': 'City Center Hotel', 'location': 'New York', 'price': 200, 'availability': False},
+    {'id': 7, 'name': 'Sea View Apartment', 'location': 'Lodnon, NW5 3AN', 'price': 120, 'availability': True},
+    {'id': 8, 'name': 'Mountain Cabin', 'location': 'Aspen', 'price': 150, 'availability': True},
+    {'id': 9, 'name': 'City Center Hotel', 'location': 'New York', 'price': 200, 'availability': False},
+    {'id': 10, 'name': 'Sea View Apartment', 'location': 'Lodnon, NW5 3AN', 'price': 120, 'availability': True},
+    {'id': 11, 'name': 'Mountain Cabin', 'location': 'Aspen', 'price': 150, 'availability': True},
+    {'id': 12, 'name': 'City Center Hotel', 'location': 'New York', 'price': 200, 'availability': False},
 ]
 
 booked_rooms = []  # List to store booked room IDs
