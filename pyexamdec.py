@@ -6,14 +6,20 @@ app = Flask(__name__)
 def load_rooms():
     with open('rooms.csv', mode='r') as file:
         reader = csv.DictReader(file)
-        return [dict(row) for row in reader]
+        rooms = []
+        for row in reader:
+            row['availability'] = row['availability'] == 'True'
+            rooms.append(row)
+        return rooms
 
 def save_rooms(rooms):
     with open('rooms.csv', mode='w', newline='') as file:
         fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rooms)
+        for room in rooms:
+            room['availability'] = 'True' if room['availability'] else 'False'
+            writer.writerow(room)
 
 rooms = load_rooms()
 booked_rooms = []
@@ -26,10 +32,10 @@ def index():
 def book_room(room_id):
     room = next((room for room in rooms if int(room['id']) == room_id), None)
     if room:
-        if room['availability'] == 'True':
-            room['availability'] = 'False' 
-            booked_rooms.append(int(room['id'])) 
-            save_rooms(rooms) 
+        if room['availability']:  # Проверяем булевое значение
+            room['availability'] = False  # Меняем на False (занято)
+            booked_rooms.append(int(room['id']))  # Добавляем в список забронированных
+            save_rooms(rooms)  # Сохраняем изменения в CSV
             return render_template('booking_confirmation.html', room=room)
         else:
             return "Room is already booked", 400
