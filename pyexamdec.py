@@ -14,7 +14,7 @@ def load_rooms():
 
 def save_rooms(rooms):
     with open('rooms.csv', mode='w', newline='') as file:
-        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description']
+        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'raiting', 'description']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         for room in rooms:
