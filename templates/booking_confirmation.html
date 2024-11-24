@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Confirmation</title>
 </head>
 <body>
     <h1>Booking Confirmation</h1>
-    {% if room %}
-        <p>You have successfully booked the room:</p>
-        <p><strong>{{ room.name }}</strong></p>
-        <p>Location: {{ room.location }}</p>
-        <p>Price: ${{ room.price }}</p>
-        <a href="{{ url_for('index') }}">Return to Home</a>
-    {% else %}
-        <p>Room not found.</p>
-    {% endif %}
+    <p><strong>Name:</strong> {{ room.name }}</p>
+    <p><strong>Location:</strong> {{ room.location }}</p>
+    <p><strong>Price:</strong> £{{ room.price }}</p>
+    <p><strong>Description:</strong> {{ room.description }}</p>
+    <p><strong>Status:</strong> {{ 'Booked' if room.availability == 'False' else 'Available' }}</p>
+    <a href="/">Back to Home</a>
 </body>
 </html>
