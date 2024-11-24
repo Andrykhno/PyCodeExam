@@ -32,10 +32,9 @@ def index():
 def book_room(room_id):
     room = next((room for room in rooms if int(room['id']) == room_id), None)
     if room:
-        if room['availability']:  # Проверяем булевое значение
-            room['availability'] = False  # Меняем на False (занято)
-            booked_rooms.append(int(room['id']))  # Добавляем в список забронированных
-            save_rooms(rooms)  # Сохраняем изменения в CSV
+        if room['availability']: 
+            booked_rooms.append(int(room['id']))  
+            save_rooms(rooms)
             return render_template('booking_confirmation.html', room=room)
         else:
             return "Room is already booked", 400
