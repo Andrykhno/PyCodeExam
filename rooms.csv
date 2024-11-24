@@ -1,13 +1,13 @@
 id,name,location,price,availability,raiting,description
-1,Beaumont Court,1-45 Holloway Rd London N7 8DB,150,True,,Cozy room in a central location with great transport links.
-2,Tufnell House,Huddleston Rd London N7 0EG,140,True,,Modern room with plenty of amenities nearby.
-3,Stapleton House,263-289 Holloway Rd London N7 6NE,170,True,,Spacious room with excellent study facilities.
-4,Julian Markham House,114 Walworth Rd London SE17 1JL,160,True,,Stylish room with modern amenities and great connectivity.
-5,Unite Students - Elizabeth Croll House,27 Penton Rise London WC1X 9AX,180,True,,Quiet room near parks and cultural attractions.
-6,The Arcade,385-401 Holloway Rd London N7 0RY,145,True,,Affordable room in a vibrant neighborhood.
-7,St Pancras Way,11 St Pancras Way London NW1 0PT,190,True,,Premium room close to major transport hubs.
-8,Urbanest St Pancras,103 Camley St London N1C 4BN,200,True,,Luxury room with panoramic city views.
-9,Hayloft Point,Long Ln London SE1 4PH,175,True,,Well-equipped room in a peaceful area.
-10,Scape Mile End,25 Bradwell St London E1 4GP,185,True,,Comfortable room with convenient access to universities.
-11,IQ Shoreditch,2 Silicon Way London N1 6AT,220,True,,Trendy room in the heart of Shoreditch.
-12,King's Cross Residence,200 Pentonville Rd London N1 9JP,210,True,,Exclusive room in a prestigious location.
+1,Beaumont Court,1-45 Holloway Rd London N7 8DB,150,True,4.7,Cozy room in a central location with great transport links.
+2,Tufnell House,Huddleston Rd London N7 0EG,140,True,4.5,Modern room with plenty of amenities nearby.
+3,Stapleton House,263-289 Holloway Rd London N7 6NE,170,True,4.6,Spacious room with excellent study facilities.
+4,Julian Markham House,114 Walworth Rd London SE17 1JL,160,True,4.3,Stylish room with modern amenities and great connectivity.
+5,Unite Students - Elizabeth Croll House,27 Penton Rise London WC1X 9AX,180,True,4.4,Quiet room near parks and cultural attractions.
+6,The Arcade,385-401 Holloway Rd London N7 0RY,145,True,4.2,Affordable room in a vibrant neighborhood.
+7,St Pancras Way,11 St Pancras Way London NW1 0PT,190,True,4.8,Premium room close to major transport hubs.
+8,Urbanest St Pancras,103 Camley St London N1C 4BN,200,True,4.9,Luxury room with panoramic city views.
+9,Hayloft Point,Long Ln London SE1 4PH,175,True,4.6,Well-equipped room in a peaceful area.
+10,Scape Mile End,25 Bradwell St London E1 4GP,185,True,4.7,Comfortable room with convenient access to universities.
+11,IQ Shoreditch,2 Silicon Way London N1 6AT,220,True,4.9,Trendy room in the heart of Shoreditch.
+12,King's Cross Residence,200 Pentonville Rd London N1 9JP,210,True,4.8,Exclusive room in a prestigious location.
