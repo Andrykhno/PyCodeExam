@@ -1,20 +1,40 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h1>Select a Room</h1>
+<h1 class="text-center mb-4">Browse Rooms</h1>
+<form method="get" class="mb-4">
+    <div class="form-row">
+        <div class="col">
+            <input type="text" name="location" class="form-control" placeholder="Search by location">
+        </div>
+        <div class="col">
+            <input type="number" name="price" class="form-control" placeholder="Max price">
+        </div>
+        <div class="col">
+            <select name="sort" class="form-control">
+                <option value="">Sort By</option>
+                <option value="price">Price</option>
+                <option value="alphabetical">Alphabetical</option>
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+        </div>
+    </div>
+</form>
 <div class="row">
     {% for room in rooms %}
     <div class="col-md-4">
         <div class="card mb-4">
-            <img src="{{ url_for('static', filename='images/room' ~ loop.index ~ '.jpg') }}" class="card-img-top" alt="{{ room.name }}">
+            <img src="{{ url_for('static', filename='images/room' ~ room.id ~ '.jpg') }}" class="card-img-top" alt="{{ room.name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ room.name }}</h5>
-                <p class="card-text">{{ room.location }}</p>
-                <p class="card-text">${{ room.price }}/night</p>
+                <p class="card-text">{{ room.description }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ room.location }}</p>
+                <p class="card-text"><strong>Price:</strong> £{{ room.price }}/night</p>
                 {% if room.availability %}
-                    <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-primary">Book Now</a>
+                    <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-success btn-block">Book Now</a>
                 {% else %}
-                    <button class="btn btn-secondary" disabled>Booked</button>
+                    <button class="btn btn-secondary btn-block" disabled>Not Available</button>
                 {% endif %}
             </div>
         </div>
