@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField
 from wtforms.validators import DataRequired, EqualTo
@@ -23,11 +23,14 @@ def save_users(users):
 def load_rooms():
     with open('rooms.csv', mode='r') as file:
         reader = csv.DictReader(file)
-        rooms = []
-        for row in reader:
-            row['availability'] = row['availability'] == 'True'
-            rooms.append(row)
-        return rooms
+        return [dict(room, price=int(room['price']), availability=room['availability'] == 'True') for room in reader]
+
+def save_rooms(rooms):
+    with open('rooms.csv', mode='w', newline='') as file:
+        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rooms)
 
 def load_transactions():
     with open('transactions.csv', mode='r') as file:
@@ -42,8 +45,8 @@ def save_transactions(transactions):
         writer.writerows(transactions)
 
 users = load_users()
-transactions = load_transactions()
 rooms = load_rooms()
+transactions = load_transactions()
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -55,6 +58,24 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
+
+@app.route('/')
+def index():
+    filters = request.args
+    filtered_rooms = rooms
+    if 'location' in filters and filters['location']:
+        filtered_rooms = [room for room in rooms if filters['location'].lower() in room['location'].lower()]
+    if 'price' in filters and filters['price']:
+        try:
+            price = int(filters['price'])
+            filtered_rooms = [room for room in filtered_rooms if room['price'] <= price]
+        except ValueError:
+            pass
+    if 'sort' in filters and filters['sort'] == 'alphabetical':
+        filtered_rooms = sorted(filtered_rooms, key=lambda x: x['name'])
+    elif 'sort' in filters and filters['sort'] == 'price':
+        filtered_rooms = sorted(filtered_rooms, key=lambda x: x['price'])
+    return render_template('index.html', rooms=filtered_rooms)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -94,7 +115,7 @@ def book_room(room_id):
     if request.method == 'POST':
         check_in = request.form['check_in']
         check_out = request.form['check_out']
-        amount = int(room['price']) * (datetime.strptime(check_out, '%Y-%m-%d') - datetime.strptime(check_in, '%Y-%m-%d')).days
+        amount = room['price'] * (datetime.strptime(check_out, '%Y-%m-%d') - datetime.strptime(check_in, '%Y-%m-%d')).days
         transactions.append({'user_id': session['user'], 'room_id': room['id'], 'check_in': check_in, 'check_out': check_out, 'amount': amount})
         save_transactions(transactions)
         room['availability'] = False
@@ -106,6 +127,10 @@ def book_room(room_id):
 def logout():
     session.pop('user', None)
     return redirect(url_for('index'))
+
+@app.route('/map')
+def map_view():
+    return render_template('map.html', rooms=rooms)
 
 if __name__ == '__main__':
     app.run(debug=True)
