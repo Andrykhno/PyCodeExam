@@ -20,6 +20,15 @@ def save_users(users):
         writer.writeheader()
         writer.writerows(users)
 
+def load_rooms():
+    with open('rooms.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        rooms = []
+        for row in reader:
+            row['availability'] = row['availability'] == 'True'
+            rooms.append(row)
+        return rooms
+
 def load_transactions():
     with open('transactions.csv', mode='r') as file:
         reader = csv.DictReader(file)
