@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Payment</h1>
+<p>You selected room: {{ room.name }}</p>
+<p>Total amount: ${{ amount }}</p>
+<a href="{{ url_for('index') }}" class="btn btn-primary">Confirm Payment</a>
+{% endblock %}
