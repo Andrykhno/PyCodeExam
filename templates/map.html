@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="display: flex; flex-wrap: nowrap;">
-    <div id="map" style="width: 50%; height: 600px;"></div>
+    <div id="map" style="width: 50%; height: 600px; border-right: 1px solid #ddd;"></div>
     <div style="width: 50%; padding: 20px;">
         <h1>Rooms in London</h1>
         <ul class="list-group">
@@ -14,7 +14,44 @@
         </ul>
     </div>
 </div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script>
-    // Add mapping functionality using Leaflet.js or Google Maps API
+    var map = L.map('map').setView([51.509865, -0.118092], 10); // Центр Лондона
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var rooms = [
+        {% for room in rooms %}
+        {
+            name: "{{ room.name }}",
+            price: "{{ room.price }}",
+            location: "{{ room.location }}",
+            latitude: {{ room.latitude }},
+            longitude: {{ room.longitude }},
+            link: "{{ url_for('book_room', room_id=room.id) }}"
+        },
+        {% endfor %}
+    ];
+
+    rooms.forEach(function(room) {
+        var marker = L.marker([room.latitude, room.longitude]).addTo(map);
+        marker.bindPopup(
+            `<strong>${room.name}</strong><br>Price: £${room.price}<br>${room.location}<br><a href="${room.link}" class="btn btn-primary btn-sm mt-2">Book Now</a>`
+        );
+    });
 </script>
+<style>
+    #map {
+        margin-right: 20px;
+    }
+
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
 {% endblock %}
