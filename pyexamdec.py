@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 import csv
 from datetime import datetime
@@ -15,7 +15,7 @@ def load_users():
 
 def save_users(users):
     with open('users.csv', mode='w', newline='') as file:
-        fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name']
+        fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name', 'phone_number']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(users)
@@ -44,21 +44,8 @@ def save_rooms(rooms):
         writer.writeheader()
         writer.writerows(rooms)
 
-def load_transactions():
-    with open('transactions.csv', mode='r') as file:
-        reader = csv.DictReader(file)
-        return list(reader)
-
-def save_transactions(transactions):
-    with open('transactions.csv', mode='w', newline='') as file:
-        fieldnames = ['user_id', 'room_id', 'check_in', 'check_out', 'amount']
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(transactions)
-
 users = load_users()
 rooms = load_rooms()
-transactions = load_transactions()
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -100,24 +87,25 @@ def register():
             'password': form.password.data,
             'booked_rooms': '',
             'first_name': '',
-            'last_name': ''
+            'last_name': '',
+            'phone_number': ''
         }
         users.append(new_user)
         save_users(users)
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/account/details')
-def account_details():
-    if 'user' not in session:
-        return render_template('error.html', message="You need to log in to view your account details.")
-    
-    current_user = next((user for user in users if user['username'] == session['user']), None)
-    if not current_user:
-        return render_template('error.html', message="Account not found.")
-    
-    booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
-    return render_template('account_details.html', user=current_user, booked_rooms=booked_rooms)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = next((user for user in users if user['username'] == form.username.data and user['password'] == form.password.data), None)
+        if user:
+            session['user'] = user['username']
+            return redirect(url_for('index'))
+        else:
+            return render_template('error.html', message="Invalid username or password.")
+    return render_template('login.html', form=form)
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
@@ -129,13 +117,14 @@ def account():
         return render_template('error.html', message="Account not found.")
     
     if request.method == 'POST':
+        # Обновляем все данные полностью
         current_user['first_name'] = request.form.get('first_name', current_user.get('first_name', ''))
         current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
         current_user['phone_number'] = request.form.get('phone_number', current_user.get('phone_number', ''))
         save_users(users)
-        return redirect(url_for('account')) 
+        return redirect(url_for('account'))  # Перенаправление на страницу после сохранения данных
     
-    editing = request.args.get('edit') == 'True' 
+    editing = request.args.get('edit') == 'True'
     booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
     return render_template('account.html', user=current_user, booked_rooms=booked_rooms, editing=editing)
 
@@ -158,18 +147,6 @@ def cancel_booking(room_id):
     
     return redirect(url_for('account'))
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = next((user for user in users if user['username'] == form.username.data and user['password'] == form.password.data), None)
-        if user:
-            session['user'] = user['username']
-            return redirect(url_for('index'))
-        else:
-            return "Invalid credentials", 400
-    return render_template('login.html', form=form)
-
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_room(room_id):
     if 'user' not in session:
@@ -186,8 +163,6 @@ def book_room(room_id):
         if current_user:
             current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
             save_users(users)
-        transactions.append({'user_id': session['user'], 'room_id': room['id'], 'check_in': check_in, 'check_out': check_out, 'amount': amount})
-        save_transactions(transactions)
         room['availability'] = False
         save_rooms(rooms)
         return render_template('payment.html', room=room, amount=amount)
