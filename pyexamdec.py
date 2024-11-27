@@ -23,11 +23,23 @@ def save_users(users):
 def load_rooms():
     with open('rooms.csv', mode='r') as file:
         reader = csv.DictReader(file)
-        return [dict(room, price=int(room['price']), availability=room['availability'] == 'True') for room in reader]
+        return [
+            {
+                'id': room['id'],
+                'name': room['name'],
+                'location': room['location'],
+                'price': int(room['price']),
+                'availability': room['availability'] == 'True',
+                'description': room['description'],
+                'latitude': float(room['latitude']),
+                'longitude': float(room['longitude']),
+            }
+            for room in reader
+        ]
 
 def save_rooms(rooms):
     with open('rooms.csv', mode='w', newline='') as file:
-        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description']
+        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description', 'latitude', 'longitude']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rooms)
