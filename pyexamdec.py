@@ -117,12 +117,11 @@ def account():
         return render_template('error.html', message="Account not found.")
     
     if request.method == 'POST':
-        # Обновляем все данные полностью
         current_user['first_name'] = request.form.get('first_name', current_user.get('first_name', ''))
         current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
         current_user['phone_number'] = request.form.get('phone_number', current_user.get('phone_number', ''))
         save_users(users)
-        return redirect(url_for('account'))  # Перенаправление на страницу после сохранения данных
+        return redirect(url_for('account')) 
     
     editing = request.args.get('edit') == 'True'
     booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
@@ -160,10 +159,7 @@ def book_room(room_id):
         check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
         
         total_days = (check_out - check_in).days
-        
-        weeks = total_days // 7 
-        remaining_days = total_days % 7 
-        amount = round((weeks * room['price']) + (room['price'] / 7 * remaining_days))
+        amount = round((total_days * room['price']))
         
         current_user = next((user for user in users if user['username'] == session['user']), None)
         if current_user:
