@@ -163,7 +163,7 @@ def book_room(room_id):
         
         weeks = total_days // 7 
         remaining_days = total_days % 7 
-        amount = (weeks * room['price']) + (room['price'] / 7 * remaining_days)
+        amount = round((weeks * room['price']) + (room['price'] / 7 * remaining_days))
         
         current_user = next((user for user in users if user['username'] == session['user']), None)
         if current_user:
