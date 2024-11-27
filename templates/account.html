@@ -44,7 +44,7 @@
                     <p><strong>Description:</strong> {{ room.description }}</p>
                 </div>
                 <div class="mt-2">
-                    <p><strong>Price:</strong> {{ room.price }}</p>
+                    <p><strong>Price:</strong> {{ pyexamdec.price }}</p>
                 </div>
                 <div class="mt-2">
                     <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="display: inline;">
