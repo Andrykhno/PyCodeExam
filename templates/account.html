@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="card mx-auto mt-4 shadow-lg" style="max-width: 800px; border-radius: 10px;">
     <div class="card-header bg-primary text-white text-center" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
@@ -14,6 +15,10 @@
                 <label for="last_name">Last Name:</label>
                 <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.get('last_name', '') }}">
             </div>
+            <div class="form-group">
+                <label for="phone_number">Phone Number:</label>
+                <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ user.get('phone_number', '') }}">
+            </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
@@ -27,10 +32,14 @@
                     <strong>{{ room.name }}</strong> (£{{ room.price }}) - {{ room.location }}
                 </div>
                 <div class="mt-2">
+                    <p><strong>Description:</strong> {{ room.description }}</p>
+                    <p><strong>Check-In:</strong> {{ room.check_in if room.check_in else 'Not specified' }}</p>
+                    <p><strong>Check-Out:</strong> {{ room.check_out if room.check_out else 'Not specified' }}</p>
+                </div>
+                <div class="mt-2">
                     <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="display: inline;">
                         <button class="btn btn-danger btn-sm">Cancel</button>
                     </form>
-                    <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-secondary btn-sm">Edit</a>
                 </div>
             </li>
             {% endfor %}
