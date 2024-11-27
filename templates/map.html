@@ -17,7 +17,7 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script>
-    var map = L.map('map').setView([51.509865, -0.118092], 10); // Центр Лондона
+    var map = L.map('map').setView([51.509865, -0.118092], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -39,8 +39,12 @@
     rooms.forEach(function(room) {
         var marker = L.marker([room.latitude, room.longitude]).addTo(map);
         marker.bindPopup(
-            `<strong>${room.name}</strong><br>Price: £${room.price}<br>${room.location}<br><a href="${room.link}" class="btn btn-primary btn-sm mt-2">Book Now</a>`
+            `<strong>${room.name}</strong><br>Price: £${room.price}<br>${room.location}`
         );
+
+        marker.on('click', function() {
+            window.location.href = room.link;
+        });
     });
 </script>
 <style>
