@@ -119,7 +119,9 @@ def account():
     if request.method == 'POST':
         current_user['first_name'] = request.form.get('first_name', current_user.get('first_name', ''))
         current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
+        current_user['phone_number'] = request.form.get('phone_number', current_user.get('phone_number', ''))
         save_users(users)
+        return redirect(url_for('account'))
     
     booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
     return render_template('account.html', user=current_user, booked_rooms=booked_rooms)
