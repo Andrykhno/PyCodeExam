@@ -105,6 +105,39 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    current_user = next((user for user in users if user['username'] == session['user']), None)
+    if request.method == 'POST':
+        current_user['first_name'] = request.form.get('first_name', current_user.get('first_name', ''))
+        current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
+        save_users(users)
+    
+    booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
+    return render_template('account.html', user=current_user, booked_rooms=booked_rooms)
+
+@app.route('/cancel_booking/<int:room_id>', methods=['POST'])
+def cancel_booking(room_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    current_user = next((user for user in users if user['username'] == session['user']), None)
+    booked_rooms = current_user.get('booked_rooms', '').split(',')
+    if str(room_id) in booked_rooms:
+        booked_rooms.remove(str(room_id))
+        current_user['booked_rooms'] = ','.join(booked_rooms)
+        save_users(users)
+        for room in rooms:
+            if str(room['id']) == str(room_id):
+                room['availability'] = True
+                save_rooms(rooms)
+                break
+    
+    return redirect(url_for('account'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
