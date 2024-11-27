@@ -1,6 +1,6 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField
+from wtforms import StringField, PasswordField, SubmitField, DateField
 from wtforms.validators import DataRequired, EqualTo
 import csv
 from datetime import datetime
@@ -15,7 +15,7 @@ def load_users():
 
 def save_users(users):
     with open('users.csv', mode='w', newline='') as file:
-        fieldnames = ['username', 'password', 'booked_rooms']
+        fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(users)
@@ -98,7 +98,9 @@ def register():
         new_user = {
             'username': form.username.data,
             'password': form.password.data,
-            'booked_rooms': ''
+            'booked_rooms': '',
+            'first_name': '',
+            'last_name': ''
         }
         users.append(new_user)
         save_users(users)
@@ -108,9 +110,12 @@ def register():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     if 'user' not in session:
-        return redirect(url_for('login'))
+        return render_template('error.html', message="You need to log in to access your account.")
     
     current_user = next((user for user in users if user['username'] == session['user']), None)
+    if not current_user:
+        return render_template('error.html', message="Account not found.")
+    
     if request.method == 'POST':
         current_user['first_name'] = request.form.get('first_name', current_user.get('first_name', ''))
         current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
@@ -122,7 +127,7 @@ def account():
 @app.route('/cancel_booking/<int:room_id>', methods=['POST'])
 def cancel_booking(room_id):
     if 'user' not in session:
-        return redirect(url_for('login'))
+        return render_template('error.html', message="You need to log in to cancel a booking.")
     
     current_user = next((user for user in users if user['username'] == session['user']), None)
     booked_rooms = current_user.get('booked_rooms', '').split(',')
@@ -153,7 +158,8 @@ def login():
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_room(room_id):
     if 'user' not in session:
-        return redirect(url_for('login'))
+        return render_template('error.html', message="You need to log in to book a room.")
+    
     room = next((room for room in rooms if int(room['id']) == room_id), None)
     if not room:
         return "Room not found", 404
@@ -161,6 +167,10 @@ def book_room(room_id):
         check_in = request.form['check_in']
         check_out = request.form['check_out']
         amount = room['price'] * (datetime.strptime(check_out, '%Y-%m-%d') - datetime.strptime(check_in, '%Y-%m-%d')).days
+        current_user = next((user for user in users if user['username'] == session['user']), None)
+        if current_user:
+            current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
+            save_users(users)
         transactions.append({'user_id': session['user'], 'room_id': room['id'], 'check_in': check_in, 'check_out': check_out, 'amount': amount})
         save_transactions(transactions)
         room['availability'] = False
