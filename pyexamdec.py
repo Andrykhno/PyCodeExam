@@ -156,9 +156,15 @@ def book_room(room_id):
     if not room:
         return "Room not found", 404
     if request.method == 'POST':
-        check_in = request.form['check_in']
-        check_out = request.form['check_out']
-        amount = room['price'] * (datetime.strptime(check_out, '%Y-%m-%d') - datetime.strptime(check_in, '%Y-%m-%d')).days
+        check_in = datetime.strptime(request.form['check_in'], '%Y-%m-%d')
+        check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
+        
+        total_days = (check_out - check_in).days
+        
+        weeks = total_days // 7 
+        remaining_days = total_days % 7 
+        amount = (weeks * room['price']) + (room['price'] / 7 * remaining_days)
+        
         current_user = next((user for user in users if user['username'] == session['user']), None)
         if current_user:
             current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
