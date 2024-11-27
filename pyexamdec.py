@@ -107,6 +107,18 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+@app.route('/account/details')
+def account_details():
+    if 'user' not in session:
+        return render_template('error.html', message="You need to log in to view your account details.")
+    
+    current_user = next((user for user in users if user['username'] == session['user']), None)
+    if not current_user:
+        return render_template('error.html', message="Account not found.")
+    
+    booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
+    return render_template('account_details.html', user=current_user, booked_rooms=booked_rooms)
+
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     if 'user' not in session:
