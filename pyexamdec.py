@@ -133,10 +133,11 @@ def account():
         current_user['last_name'] = request.form.get('last_name', current_user.get('last_name', ''))
         current_user['phone_number'] = request.form.get('phone_number', current_user.get('phone_number', ''))
         save_users(users)
-        return redirect(url_for('account'))
+        return redirect(url_for('account')) 
     
+    editing = request.args.get('edit') == 'True' 
     booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
-    return render_template('account.html', user=current_user, booked_rooms=booked_rooms)
+    return render_template('account.html', user=current_user, booked_rooms=booked_rooms, editing=editing)
 
 @app.route('/cancel_booking/<int:room_id>', methods=['POST'])
 def cancel_booking(room_id):
