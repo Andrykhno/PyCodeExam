@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div id="roomPhotosCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for photo in photos %}
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+                <img src="{{ photo }}" class="d-block w-100" alt="Room Photo">
+            </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#roomPhotosCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#roomPhotosCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+    <h2 class="mt-4">{{ room.name }}</h2>
+    <p><strong>Location:</strong> {{ room.location }}</p>
+    <p><strong>Description:</strong> {{ room.description }}</p>
+    <p><strong>Price:</strong> £{{ room.price }} per night</p>
+
+    <div id="map" style="height: 400px;" class="my-4"></div>
+
+    <h4>Amenities</h4>
+    <ul>
+        {% for amenity in amenities %}
+        <li>{{ amenity }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Nearby Places</h4>
+    <ul>
+        {% for place in nearby_places %}
+        <li>{{ place }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Contact</h4>
+    <p>Email: info@example.com</p>
+    <p>Phone: +44 123 456 789</p>
+</div>
+
+<script>
+    function initMap() {
+        const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: roomLocation,
+        });
+        new google.maps.Marker({
+            position: roomLocation,
+            map: map,
+        });
+    }
+</script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+</script>
+{% endblock %}
