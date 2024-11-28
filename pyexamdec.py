@@ -154,44 +154,10 @@ def book_room(room_id):
     room = next((room for room in rooms if int(room['id']) == room_id), None)
     if not room:
         return "Room not found", 404
-    if request.method == 'POST':
-        check_in = datetime.strptime(request.form['check_in'], '%Y-%m-%d')
-        check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
-        
-        total_days = (check_out - check_in).days
-        amount = round((total_days * room['price']))
-        
-        current_user = next((user for user in users if user['username'] == session['user']), None)
-        if current_user:
-            current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
-            save_users(users)
-        room['availability'] = False
-        save_rooms(rooms)
-        return render_template('payment.html', room=room, amount=amount)
-    return render_template('booking_form.html', room=room)
-
-@app.route('/logout')
-def logout():
-    session.pop('user', None)
-    return redirect(url_for('index'))
-
-@app.route('/map')
-def map_view():
-    return render_template('map.html', rooms=rooms)
-
-@app.route('/book/<int:room_id>', methods=['GET', 'POST'])
-def book_room(room_id):
-    if 'user' not in session:
-        return render_template('error.html', message="You need to log in to book a room.")
-    
-    room = next((room for room in rooms if int(room['id']) == room_id), None)
-    if not room:
-        return "Room not found", 404
 
     if request.method == 'POST':
         check_in = datetime.strptime(request.form['check_in'], '%Y-%m-%d')
         check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
-        
         total_days = (check_out - check_in).days
         amount = round((total_days * room['price']))
         
@@ -214,6 +180,15 @@ def book_room(room_id):
         nearby_places=nearby_places,
         photos=photos
     )
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('index'))
+
+@app.route('/map')
+def map_view():
+    return render_template('map.html', rooms=rooms)
 
 if __name__ == '__main__':
     app.run(debug=True)
