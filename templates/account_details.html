@@ -1,40 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card mx-auto mt-4 shadow-lg" style="max-width: 800px; border-radius: 10px;">
-    <div class="card-header bg-primary text-white text-center" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
-        <h3>Account Details</h3>
-    </div>
-    <div class="card-body">
-        <h4>Personal Information:</h4>
-        <p><strong>First Name:</strong> {{ user.get('first_name', 'Not provided') }}</p>
-        <p><strong>Last Name:</strong> {{ user.get('last_name', 'Not provided') }}</p>
-        <p><strong>Phone Number:</strong> {{ user.get('phone_number', 'Not provided') }}</p>
-        <a href="{{ url_for('account') }}" class="btn btn-primary">Edit Details</a>
-    </div>
-    <div class="card-footer">
-        <h4>Your Booked Rooms:</h4>
-        {% if booked_rooms %}
-        <ul class="list-group">
-            {% for room in booked_rooms %}
-            <li class="list-group-item">
-                <div>
-                    <strong>{{ room.name }}</strong> (£{{ room.price }}) - {{ room.location }}
-                </div>
-                <div class="mt-2">
-                    <p><strong>Description:</strong> {{ room.description }}</p>
-                </div>
-                <div class="mt-2">
-                    <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="display: inline;">
-                        <button class="btn btn-danger btn-sm">Cancel</button>
-                    </form>
-                </div>
-            </li>
+<div class="container mt-4">
+    <!-- Slider for Room Photos -->
+    <div id="roomPhotosCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for photo in photos %}
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+                <img src="{{ photo }}" class="d-block w-100" alt="Room Photo">
+            </div>
             {% endfor %}
-        </ul>
-        {% else %}
-        <p>You have not booked any rooms yet.</p>
-        {% endif %}
+        </div>
+        <a class="carousel-control-prev" href="#roomPhotosCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#roomPhotosCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
+
+    <!-- Room Details -->
+    <h2 class="mt-4">{{ room.name }}</h2>
+    <p><strong>Location:</strong> {{ room.location }}</p>
+    <p><strong>Description:</strong> {{ room.description }}</p>
+    <p><strong>Price:</strong> £{{ room.price }} per night</p>
+
+    <!-- Map -->
+    <div id="map" style="height: 400px;" class="my-4"></div>
+
+    <!-- Amenities -->
+    <h4>Amenities</h4>
+    <ul>
+        {% for amenity in amenities %}
+        <li>{{ amenity }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Nearby Places -->
+    <h4>Nearby Places</h4>
+    <ul>
+        {% for place in nearby_places %}
+        <li>{{ place }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Contact Information -->
+    <h4>Contact</h4>
+    <p>Email: info@example.com</p>
+    <p>Phone: +44 123 456 789</p>
+
+    <!-- Booking Form -->
+    <h4 class="mt-5">Book this Room</h4>
+    <form method="post">
+        <div class="form-group">
+            <label for="check_in" class="form-label"><strong>Check-In Date</strong></label>
+            <input type="date" id="check_in" name="check_in" class="form-control" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="check_out" class="form-label"><strong>Check-Out Date</strong></label>
+            <input type="date" id="check_out" name="check_out" class="form-control" required>
+        </div>
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 10px; font-size: 18px;">Confirm Booking</button>
+        </div>
+    </form>
 </div>
+
+<!-- Map Script -->
+<script>
+    function initMap() {
+        const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: roomLocation,
+        });
+        new google.maps.Marker({
+            position: roomLocation,
+            map: map,
+        });
+    }
+</script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+</script>
 {% endblock %}
