@@ -1,22 +1,67 @@
+/* Общие стили для сайта */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-h1, h5 {
-    color: #343a40;
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar a {
+    color: white;
+}
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Стили из booking_form.html */
+.booking-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
 }
 
 .card {
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .card:hover {
-    transform: scale(1.02);
-    transition: 0.3s;
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.navbar-brand, .nav-link {
-    color: #ffffff !important;
+.form-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-control {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Стили из map.html */
+#map {
+    margin-right: 20px;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
