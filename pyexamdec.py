@@ -124,7 +124,24 @@ def account():
         return redirect(url_for('account')) 
     
     editing = request.args.get('edit') == 'True'
-    booked_rooms = [room for room in rooms if str(room['id']) in current_user.get('booked_rooms', '').split(',')]
+    booked_rooms = []
+    for room in rooms:
+        if str(room['id']) in current_user.get('booked_rooms', '').split(','):
+            check_in = current_user.get(f'check_in_{room["id"]}')
+            check_out = current_user.get(f'check_out_{room["id"]}')
+            if check_in and check_out:
+                from datetime import datetime
+                check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
+                check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
+                days = (check_out_date - check_in_date).days
+                total_price = days * room['price']
+                room['total_price'] = total_price
+                room['check_in'] = check_in
+                room['check_out'] = check_out
+            else:
+                room['total_price'] = 0
+            booked_rooms.append(room)
+    
     return render_template('account.html', user=current_user, booked_rooms=booked_rooms, editing=editing)
 
 @app.route('/cancel_booking/<int:room_id>', methods=['POST'])
@@ -146,58 +163,40 @@ def cancel_booking(room_id):
     
     return redirect(url_for('account'))
 
-booked_rooms = []
-
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_room(room_id):
-    # Проверяем, существует ли комната
-    room = rooms.get(room_id)
+    if 'user' not in session:
+        return render_template('error.html', message="You need to log in to book a room.")
+    
+    room = next((room for room in rooms if int(room['id']) == room_id), None)
     if not room:
-        flash("Room not found!", "error")
-        return redirect(url_for('index'))
+        return "Room not found", 404
 
     if request.method == 'POST':
-        try:
-            # Получаем данные из формы
-            check_in = request.form.get('check_in')
-            check_out = request.form.get('check_out')
+        check_in = datetime.strptime(request.form['check_in'], '%Y-%m-%d')
+        check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
+        total_days = (check_out - check_in).days
+        amount = round((total_days * room['price']))
+        
+        current_user = next((user for user in usкers if user['username'] == session['user']), None)
+        if current_user:
+            current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
+            save_users(users)
+        room['availability'] = False
+        save_rooms(rooms)
+        return render_template('payment.html', room=room, amount=amount)
+    
+    amenities = ["Hot water", "Free Wi-Fi", "Heating", "Air Conditioning"]
+    nearby_places = ["Metro Station - 200m", "Supermarket - 500m", "Park - 1km"]
+    photos = [f"/static/images/room{room['id']}_1.jpg", f"/static/images/room{room['id']}_2.jpg"]
 
-            if not check_in or not check_out:
-                flash("Please select valid dates.", "error")
-                return redirect(url_for('book_room', room_id=room_id))
-
-            # Расчёт итоговой цены
-            from datetime import datetime
-            check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
-            check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
-
-            if check_out_date <= check_in_date:
-                flash("Check-out date must be after check-in date.", "error")
-                return redirect(url_for('book_room', room_id=room_id))
-
-            days = (check_out_date - check_in_date).days
-            total_price = days * room['price']
-
-            # Сохраняем данные бронирования
-            booking = {
-                "room_id": room_id,
-                "name": room['name'],
-                "price": room['price'],
-                "location": room['location'],
-                "check_in": check_in,
-                "check_out": check_out,
-                "total_price": total_price
-            }
-            booked_rooms.append(booking)
-
-            flash("Room booked successfully!", "success")
-            return redirect(url_for('account'))
-
-        except Exception as e:
-            flash(f"An error occurred: {e}", "error")
-            return redirect(url_for('book_room', room_id=room_id))
-
-    return render_template('room_details.html', room=room)
+    return render_template(
+        'room_details.html',
+        room=room,
+        amenities=amenities,
+        nearby_places=nearby_places,
+        photos=photos
+    )
 
 @app.route('/logout')
 def logout():
