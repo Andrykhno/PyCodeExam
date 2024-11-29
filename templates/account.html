@@ -18,15 +18,16 @@
             {% if booked_rooms %}
             <ul class="list-group">
                 {% for room in booked_rooms %}
-                <li class="list-group-item">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                         <strong>{{ room.name }}</strong> (£{{ room.price }} per night) - {{ room.location }}
-                    </div>
-                    <div class="mt-2">
                         <p><strong>Check-In:</strong> {{ room.check_in }}</p>
                         <p><strong>Check-Out:</strong> {{ room.check_out }}</p>
                         <p><strong>Total Price:</strong> £{{ room.total_price }}</p>
                     </div>
+                    <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="margin: 0;">
+                        <button class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
                 </li>
                 {% endfor %}
             </ul>

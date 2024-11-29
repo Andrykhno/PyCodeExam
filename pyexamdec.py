@@ -150,16 +150,24 @@ def cancel_booking(room_id):
         return render_template('error.html', message="You need to log in to cancel a booking.")
     
     current_user = next((user for user in users if user['username'] == session['user']), None)
+    if not current_user:
+        return render_template('error.html', message="Account not found.")
+
     booked_rooms = current_user.get('booked_rooms', '').split(',')
     if str(room_id) in booked_rooms:
         booked_rooms.remove(str(room_id))
         current_user['booked_rooms'] = ','.join(booked_rooms)
+        current_user.pop(f'check_in_{room_id}', None)
+        current_user.pop(f'check_out_{room_id}', None)
         save_users(users)
+
         for room in rooms:
             if str(room['id']) == str(room_id):
                 room['availability'] = True
                 save_rooms(rooms)
                 break
+
+    flash("Booking successfully canceled!", "success")
     return redirect(url_for('account'))
 
 def save_users(users):
