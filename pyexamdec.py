@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
@@ -160,9 +160,18 @@ def cancel_booking(room_id):
                 room['availability'] = True
                 save_rooms(rooms)
                 break
-    
     return redirect(url_for('account'))
 
+def save_users(users):
+    fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name', 'phone_number']
+    
+    dynamic_fields = set(key for user in users for key in user.keys() if key not in fieldnames)
+    all_fields = fieldnames + list(dynamic_fields)
+
+    with open('users.csv', mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=all_fields)
+        writer.writeheader()
+        writer.writerows(users)
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_room(room_id):
     if 'user' not in session:
@@ -173,19 +182,46 @@ def book_room(room_id):
         return "Room not found", 404
 
     if request.method == 'POST':
-        check_in = datetime.strptime(request.form['check_in'], '%Y-%m-%d')
-        check_out = datetime.strptime(request.form['check_out'], '%Y-%m-%d')
-        total_days = (check_out - check_in).days
-        amount = round((total_days * room['price']))
-        
-        current_user = next((user for user in usкers if user['username'] == session['user']), None)
-        if current_user:
-            current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
-            save_users(users)
-        room['availability'] = False
-        save_rooms(rooms)
-        return render_template('payment.html', room=room, amount=amount)
-    
+        try:
+            check_in = request.form['check_in']
+            check_out = request.form['check_out']
+
+            check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
+            check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
+            if check_out_date <= check_in_date:
+                return render_template(
+                    'room_details.html',
+                    room=room,
+                    amenities=["Hot water", "Free Wi-Fi", "Heating", "Air Conditioning"],
+                    nearby_places=["Metro Station - 200m", "Supermarket - 500m", "Park - 1km"],
+                    photos=[
+                        f"/static/images/room{room['id']}_1.jpg",
+                        f"/static/images/room{room['id']}_2.jpg"
+                    ],
+                    error="Check-out date must be after check-in date."
+                )
+
+            total_days = (check_out_date - check_in_date).days
+            total_price = total_days * room['price']
+
+            current_user = next((user for user in users if user['username'] == session['user']), None)
+            if current_user:
+                current_user['booked_rooms'] = ','.join(
+                    current_user.get('booked_rooms', '').split(',') + [str(room_id)]
+                )
+                current_user[f'check_in_{room_id}'] = check_in
+                current_user[f'check_out_{room_id}'] = check_out
+                save_users(users)
+
+            room['availability'] = False
+            save_rooms(rooms)
+
+            flash("Booking confirmed successfully!", "success")
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            return render_template('error.html', message=f"An error occurred: {e}")
+
     amenities = ["Hot water", "Free Wi-Fi", "Heating", "Air Conditioning"]
     nearby_places = ["Metro Station - 200m", "Supermarket - 500m", "Park - 1km"]
     photos = [f"/static/images/room{room['id']}_1.jpg", f"/static/images/room{room['id']}_2.jpg"]

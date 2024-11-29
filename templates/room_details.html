@@ -2,16 +2,11 @@
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Название комнаты -->
     <h2 class="mb-4">{{ room.name }}</h2>
-
-    <!-- Главная фотография -->
     <div id="main-photo" class="text-center mb-4">
         <img id="current-photo" src="{{ url_for('static', filename='images/room' ~ room.id ~ '_1.jpg') }}" 
              class="img-fluid" style="max-height: 500px; object-fit: cover;" alt="Main Room Photo">
     </div>
-
-    <!-- Миниатюры -->
     <div class="thumbnails d-flex justify-content-center mb-4">
         {% for photo_index in range(1, 4) %}
         <img src="{{ url_for('static', filename='images/room' ~ room.id ~ '_' ~ photo_index ~ '.jpg') }}" 
@@ -21,59 +16,66 @@
              onclick="changeMainPhoto(this.src)">
         {% endfor %}
     </div>
-
-    <!-- Описание комнаты -->
     <p><strong>Location:</strong> {{ room.location }}</p>
-    <p><strong>Description:</strong> {{ room.description }}</p>
     <p><strong>Price:</strong> £{{ room.price }} per night</p>
-
-    <!-- Удобства -->
     <h4>Amenities</h4>
     <ul>
         {% for amenity in amenities %}
         <li>{{ amenity }}</li>
         {% endfor %}
     </ul>
-
-    <!-- Ближайшие места -->
     <h4>Nearby Places</h4>
     <ul>
         {% for place in nearby_places %}
         <li>{{ place }}</li>
         {% endfor %}
     </ul>
-
-    <!-- Карта -->
     <div id="map" style="height: 400px;" class="my-4"></div>
-
-    <!-- Контакты -->
-    <h4>Contact</h4>
-    <p>Email: info@example.com</p>
-    <p>Phone: +44 123 456 789</p>
-
-    <!-- Скрипт для карты -->
-    <script>
-        function initMap() {
-            const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
-            const map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: roomLocation,
-            });
-            new google.maps.Marker({
-                position: roomLocation,
-                map: map,
-            });
-        }
-    </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
-    </script>
+    <h4 class="mt-5">Book this Room</h4>
+    <form id="booking-form" method="post" action="{{ url_for('book_room', room_id=room.id) }}">
+        <div class="form-group">
+            <label for="check_in"><strong>Check-In Date</strong></label>
+            <input type="date" id="check_in" name="check_in" class="form-control" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="check_out"><strong>Check-Out Date</strong></label>
+            <input type="date" id="check_out" name="check_out" class="form-control" required>
+        </div>
+        <div id="error-message" class="text-danger mt-3" style="display: none;">Invalid dates: Check-out must be after Check-in.</div>
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary btn-block">Confirm Booking</button>
+        </div>
+    </form>
 </div>
-
-<!-- JavaScript для смены главной фотографии -->
 <script>
     function changeMainPhoto(photoSrc) {
         document.getElementById('current-photo').src = photoSrc;
+    }
+    document.getElementById('booking-form').addEventListener('submit', function(event) {
+        const checkIn = new Date(document.getElementById('check_in').value);
+        const checkOut = new Date(document.getElementById('check_out').value);
+        if (!checkIn || !checkOut || checkOut <= checkIn) {
+            event.preventDefault();
+            document.getElementById('error-message').style.display = 'block';
+        } else {
+            document.getElementById('error-message').style.display = 'none';
+        }
+    });
+</script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+</script>
+<script>
+    function initMap() {
+        const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: roomLocation,
+        });
+        new google.maps.Marker({
+            position: roomLocation,
+            map: map,
+        });
     }
 </script>
 {% endblock %}
