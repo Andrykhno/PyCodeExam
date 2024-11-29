@@ -25,21 +25,21 @@ def load_rooms():
         reader = csv.DictReader(file)
         return [
             {
-                'id': room['id'],
-                'name': room['name'],
-                'location': room['location'],
-                'price': int(room['price']),
-                'availability': room['availability'] == 'True',
-                'description': room['description'],
-                'latitude': float(room['latitude']),
-                'longitude': float(room['longitude']),
+                'id': int(row['id']),
+                'name': row['name'],
+                'location': row['location'],
+                'price': int(row['price']),
+                'availability': row['availability'] == 'True',
+                'description': row.get('description', 'No description available'),
+                'latitude': float(row['latitude']),
+                'longitude': float(row['longitude'])
             }
-            for room in reader
+            for row in reader
         ]
 
 def save_rooms(rooms):
+    fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description', 'latitude', 'longitude']
     with open('rooms.csv', mode='w', newline='') as file:
-        fieldnames = ['id', 'name', 'location', 'price', 'availability', 'description', 'latitude', 'longitude']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rooms)
@@ -164,8 +164,9 @@ def cancel_booking(room_id):
         for room in rooms:
             if str(room['id']) == str(room_id):
                 room['availability'] = True
-                save_rooms(rooms)
                 break
+        
+        save_rooms(rooms)
 
     flash("Booking successfully canceled!", "success")
     return redirect(url_for('account'))

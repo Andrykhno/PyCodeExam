@@ -1,13 +1,1 @@
 id,name,location,price,availability,description,latitude,longitude
-1,Standard Room,Central London,100,True,A cozy room for two,51.5074,-0.1278
-2,Deluxe Room,West London,200,False,A luxurious room with a great view,51.5155,-0.0922
-3,Premium Suite,East London,300,True,A spacious suite with premium amenities,51.5033,-0.1195
-4,Budget Room,North London,80,True,A small but comfortable room,51.5098,-0.1357
-5,Family Room,South London,150,True,A perfect room for families,51.5014,-0.1419
-6,Executive Suite,Central London,350,True,An exclusive suite for business professionals,51.5065,-0.1276
-7,Luxury Loft,Central London,500,True,A modern loft with all premium amenities,51.5102,-0.1337
-8,Studio Apartment,West London,120,True,A compact studio for solo travelers,51.5142,-0.1485
-9,Heritage Room,East London,250,True,A room with historic charm and modern comforts,51.5058,-0.0751
-10,Penthouse,South London,600,True,Top-floor penthouse with panoramic views,51.4995,-0.1267
-11,Eco-Friendly Suite,North London,180,True,A sustainable room with eco-friendly features,51.5203,-0.134
-12,Backpacker’s Haven,Central London,70,True,Affordable and convenient for backpackers,51.5116,-0.1198
