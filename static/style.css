@@ -20,7 +20,6 @@ body {
     text-align: center;
 }
 
-/* Стили из booking_form.html */
 .booking-form-container {
     display: flex;
     justify-content: center;
@@ -55,7 +54,6 @@ body {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
 }
 
-/* Стили из map.html */
 #map {
     margin-right: 20px;
 }
@@ -64,4 +62,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+#main-photo img {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.thumbnails img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.thumbnails img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }

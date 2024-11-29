@@ -161,7 +161,7 @@ def book_room(room_id):
         total_days = (check_out - check_in).days
         amount = round((total_days * room['price']))
         
-        current_user = next((user for user in users if user['username'] == session['user']), None)
+        current_user = next((user for user in usкers if user['username'] == session['user']), None)
         if current_user:
             current_user['booked_rooms'] = ','.join(current_user.get('booked_rooms', '').split(',') + [str(room_id)])
             save_users(users)
