@@ -1,62 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card mx-auto mt-4 shadow-lg" style="max-width: 800px; border-radius: 10px;">
-    <div class="card-header bg-primary text-white text-center" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
-        <h3>Your Account</h3>
-    </div>
-    <div class="card-body">
-        {% if editing %}
-        <form method="POST">
-            <div class="form-group">
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.get('first_name', '') }}">
-            </div>
-            <div class="form-group">
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.get('last_name', '') }}">
-            </div>
-            <div class="form-group">
-                <label for="phone_number">Phone Number:</label>
-                <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ user.get('phone_number', '') }}">
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-        {% else %}
-        <!-- Отображение данных -->
-        <h4>Personal Information:</h4>
-        <p><strong>First Name:</strong> {{ user.get('first_name', 'Not provided') }}</p>
-        <p><strong>Last Name:</strong> {{ user.get('last_name', 'Not provided') }}</p>
-        <p><strong>Phone Number:</strong> {{ user.get('phone_number', 'Not provided') }}</p>
-        <a href="{{ url_for('account', edit=True) }}" class="btn btn-primary">Edit Details</a>
-        {% endif %}
-    </div>
-    <div class="card-footer">
-        <h4>Your Booked Rooms:</h4>
-        {% if booked_rooms %}
-        <ul class="list-group">
-            {% for room in booked_rooms %}
-            <li class="list-group-item">
-                <div>
-                    <strong>{{ room.name }}</strong> (£{{ room.price }}) - {{ room.location }}
-                </div>
-                <div class="mt-2">
-                    <p><strong>Description:</strong> {{ room.description }}</p>
-                </div>
-                <div class="mt-2">
-                    <p><strong>Final price:</strong> £{{ room.price }}</p>
-                </div>
-                <div class="mt-2">
-                    <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="display: inline;">
-                        <button class="btn btn-danger btn-sm">Cancel</button>
-                    </form>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>You have not booked any rooms yet.</p>
-        {% endif %}
+<div class="container mt-4">
+    <div class="card mx-auto shadow-lg" style="max-width: 800px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h3>Your Account</h3>
+        </div>
+        <div class="card-body">
+            <h4>Personal Information:</h4>
+            <p><strong>First Name:</strong> {{ user.get('first_name', 'Not provided') }}</p>
+            <p><strong>Last Name:</strong> {{ user.get('last_name', 'Not provided') }}</p>
+            <p><strong>Phone Number:</strong> {{ user.get('phone_number', 'Not provided') }}</p>
+            <a href="{{ url_for('account', edit=True) }}" class="btn btn-primary">Edit Details</a>
+        </div>
+        <div class="card-footer">
+            <h4>Your Booked Rooms:</h4>
+            {% if booked_rooms %}
+            <ul class="list-group">
+                {% for room in booked_rooms %}
+                <li class="list-group-item">
+                    <div>
+                        <strong>{{ room.name }}</strong> (£{{ room.price }} per night) - {{ room.location }}
+                    </div>
+                    <div class="mt-2">
+                        <p><strong>Description:</strong> {{ room.description }}</p>
+                    </div>
+                    <div class="mt-2">
+                        <p><strong>Check-In:</strong> {{ room.check_in }}</p>
+                        <p><strong>Check-Out:</strong> {{ room.check_out }}</p>
+                        <p><strong>Total Price:</strong> £{{ room.total_price }}</p>
+                    </div>
+                    <div class="mt-2">
+                        <form method="POST" action="{{ url_for('cancel_booking', room_id=room.id) }}" style="display: inline;">
+                            <button class="btn btn-danger btn-sm">Cancel</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>You have not booked any rooms yet.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

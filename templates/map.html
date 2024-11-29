@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="display: flex; flex-wrap: nowrap;">
-    <div id="map" style="width: 50%; height: 600px; border-right: 1px solid #ddd;"></div>
-    <div style="width: 50%; padding: 20px;">
-        <h1>Rooms in London</h1>
-        <ul class="list-group">
-            {% for room in rooms %}
-            <li class="list-group-item">
-                <strong>{{ room.name }}</strong> (£{{ room.price }}) - {{ room.location }}
-                <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-sm btn-primary float-right">View</a>
-            </li>
-            {% endfor %}
-        </ul>
+<div class="container mt-4">
+    <div style="display: flex; flex-wrap: nowrap;">
+        <div id="map" style="width: 50%; height: 600px; border-right: 1px solid #ddd;"></div>
+        <div style="width: 50%; padding: 20px;">
+            <h1>Rooms in London</h1>
+            <ul class="list-group">
+                {% for room in rooms %}
+                <li class="list-group-item">
+                    <strong>{{ room.name }}</strong> (£{{ room.price }}) - {{ room.location }}
+                    <a href="{{ url_for('book_room', room_id=room.id) }}" class="btn btn-sm btn-primary float-right">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </div>
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script>
@@ -47,3 +50,4 @@
         });
     });
 </script>
+{% endblock %}
