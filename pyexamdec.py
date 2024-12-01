@@ -26,13 +26,15 @@ def save_users(users):
     for user in users:
         existing_users_dict[user['username']] = user
 
-    updated_users = list(existing_users_dict.values())
+    all_fields = set()
+    for user in existing_users_dict.values():
+        all_fields.update(user.keys())
+    all_fields = list(all_fields)
 
-    fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name', 'phone_number']
     with open('users.csv', mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer = csv.DictWriter(file, fieldnames=all_fields)
         writer.writeheader()
-        writer.writerows(updated_users)
+        writer.writerows(existing_users_dict.values())
 
 
 def load_rooms():
@@ -177,11 +179,14 @@ def cancel_booking(room_id):
         return render_template('error.html', message="Account not found.")
 
     booked_rooms = current_user.get('booked_rooms', '').split(',')
+
     if str(room_id) in booked_rooms:
         booked_rooms.remove(str(room_id))
         current_user['booked_rooms'] = ','.join(booked_rooms)
+
         current_user.pop(f'check_in_{room_id}', None)
         current_user.pop(f'check_out_{room_id}', None)
+
         save_users(users)
 
         for room in rooms:
@@ -193,7 +198,6 @@ def cancel_booking(room_id):
 
     flash("Booking successfully canceled!", "success")
     return redirect(url_for('account'))
-
 
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_room(room_id):
@@ -219,9 +223,10 @@ def book_room(room_id):
 
             current_user = next((user for user in users if user['username'] == session['user']), None)
             if current_user:
-                current_user['booked_rooms'] = ','.join(
-                    current_user.get('booked_rooms', '').split(',') + [str(room_id)]
-                )
+                booked_rooms = current_user.get('booked_rooms', '').split(',')
+                if str(room_id) not in booked_rooms:
+                    booked_rooms.append(str(room_id))
+                current_user['booked_rooms'] = ','.join(booked_rooms)
                 current_user[f'check_in_{room_id}'] = check_in
                 current_user[f'check_out_{room_id}'] = check_out
                 save_users(users)
@@ -229,7 +234,7 @@ def book_room(room_id):
             room['availability'] = False
             save_rooms(rooms)
 
-            flash("Booking confirmed successfully!", "success")
+            flash(f"Booking confirmed! Total Price: £{total_price}", "success")
             return redirect(url_for('index'))
 
         except Exception as e:
