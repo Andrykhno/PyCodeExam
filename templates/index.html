@@ -25,7 +25,7 @@
     {% for room in rooms %}
     <div class="col-md-4">
         <div class="card mb-4">
-            <img src="{{ url_for('static', filename='images/room' ~ room.id ~ '.jpg') }}" class="card-img-top" alt="{{ room.name }}">
+            <img src="{{ url_for('static', filename='images/room' ~ room.id ~ '_1.jpg') }}" class="card-img-top" alt="{{ room.name }}" style="height: 200px; object-fit: cover;">
             <div class="card-body">
                 <h5 class="card-title">{{ room.name }}</h5>
                 <p class="card-text">{{ room.description }}</p>
