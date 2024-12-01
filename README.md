@@ -46,7 +46,6 @@ Follow these steps to set up and run the application:
    git clone https://github.com/Andrykhno/PyCodeExam.git
    cd PyCodeExam
 3.	Install the required dependencies from the requirements.txt file:
-   ```bash
    pip install -r requirements.txt 
 4.	Run the application using the command:
    python pyexamdec.py
