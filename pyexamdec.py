@@ -16,11 +16,23 @@ def load_users():
 
 
 def save_users(users):
+    try:
+        existing_users = load_users()
+    except FileNotFoundError:
+        existing_users = []
+
+    existing_users_dict = {user['username']: user for user in existing_users}
+
+    for user in users:
+        existing_users_dict[user['username']] = user
+
+    updated_users = list(existing_users_dict.values())
+
     fieldnames = ['username', 'password', 'booked_rooms', 'first_name', 'last_name', 'phone_number']
     with open('users.csv', mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(users)
+        writer.writerows(updated_users)
 
 
 def load_rooms():
@@ -221,7 +233,7 @@ def book_room(room_id):
             return redirect(url_for('index'))
 
         except Exception as e:
-            return
+            return render_template('error.html', message=f"An error occurred: {e}")
 
     return render_template('room_details.html', room=room)
 
