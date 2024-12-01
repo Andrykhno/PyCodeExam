@@ -2,7 +2,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Slider for Room Photos -->
     <div id="roomPhotosCarousel" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             {% for photo in photos %}
@@ -21,16 +20,13 @@
         </a>
     </div>
 
-    <!-- Room Details -->
     <h2 class="mt-4">{{ room.name }}</h2>
     <p><strong>Location:</strong> {{ room.location }}</p>
     <p><strong>Description:</strong> {{ room.description }}</p>
     <p><strong>Price:</strong> £{{ room.price }} per night</p>
 
-    <!-- Map -->
     <div id="map" style="height: 400px;" class="my-4"></div>
 
-    <!-- Amenities -->
     <h4>Amenities</h4>
     <ul>
         {% for amenity in amenities %}
@@ -38,7 +34,6 @@
         {% endfor %}
     </ul>
 
-    <!-- Nearby Places -->
     <h4>Nearby Places</h4>
     <ul>
         {% for place in nearby_places %}
@@ -46,12 +41,10 @@
         {% endfor %}
     </ul>
 
-    <!-- Contact Information -->
     <h4>Contact</h4>
     <p>Email: info@example.com</p>
     <p>Phone: +44 123 456 789</p>
 
-    <!-- Booking Form -->
     <h4 class="mt-5">Book this Room</h4>
     <form method="post">
         <div class="form-group">
@@ -68,21 +61,25 @@
     </form>
 </div>
 
-<!-- Map Script -->
 <script>
     function initMap() {
-        const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
-        const map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 15,
-            center: roomLocation,
-        });
-        new google.maps.Marker({
-            position: roomLocation,
-            map: map,
-        });
+    {% if room.latitude and room.longitude %}
+    const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
+    const map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: roomLocation,
+    });
+    new google.maps.Marker({
+        position: roomLocation,
+        map: map,
+    });
+    {% else %}
+    document.getElementById('map').innerHTML = "Location information is unavailable.";
+    {% endif %}
     }
 </script>
 <script async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8MJY5mOlpMOcCi0OJyOBA7cC9NpL30oA&callback=initMap">
+</script>
 </script>
 {% endblock %}

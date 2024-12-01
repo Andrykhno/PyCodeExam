@@ -213,8 +213,12 @@ def book_room(room_id):
             check_in = request.form['check_in']
             check_out = request.form['check_out']
 
+            if not check_in or not check_out:
+                return render_template('room_details.html', room=room, error="Please provide both check-in and check-out dates.")
+
             check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
             check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
+
             if check_out_date <= check_in_date:
                 return render_template('room_details.html', room=room, error="Check-out date must be after check-in date.")
 
@@ -237,10 +241,18 @@ def book_room(room_id):
             flash(f"Booking confirmed! Total Price: £{total_price}", "success")
             return redirect(url_for('index'))
 
+        except ValueError:
+            return render_template('room_details.html', room=room, error="Invalid date format. Use YYYY-MM-DD.")
         except Exception as e:
-            return render_template('error.html', message=f"An error occurred: {e}")
+            return render_template('error.html', message=f"An unexpected error occurred: {e}")
 
-    return render_template('room_details.html', room=room)
+    map_data = {
+        "latitude": room.get('latitude'),
+        "longitude": room.get('longitude'),
+        "show_map": room.get('latitude') is not None and room.get('longitude') is not None
+    }
+
+    return render_template('room_details.html', room=room, map_data=map_data)
 
 
 @app.route('/logout')
