@@ -5,9 +5,9 @@ AndRent
 The source code for this project is available on GitHub: https://github.com/Andrykhno/PyCodeExam
 
 ## Identification
-- **Name:** 
-- **P-number:** 
-- **Course code:** 
+- Andrii Prykhno
+- P455514
+- KICL IY499 Introduction to Programming
 
 ## Declaration of Own Work
 I confirm that this assignment is my own work.
