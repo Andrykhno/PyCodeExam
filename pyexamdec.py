@@ -221,7 +221,7 @@ def book_room(room_id):
             return redirect(url_for('index'))
 
         except Exception as e:
-            return render_template('error.html', message=f"An error occurred: {e}")
+            return
 
     return render_template('room_details.html', room=room)
 
